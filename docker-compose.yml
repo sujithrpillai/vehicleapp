@@ -1,0 +1,68 @@
+services:
+  frontend:
+    build:
+      context: ./vehicle-frontend
+      dockerfile: Dockerfile
+    # volumes:
+    #   - ./vehicle-frontend:/app
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+  frontend-prod:
+    build:
+      context: ./vehicle-frontend
+      dockerfile: Dockerfile.prod
+    # volumes:
+    #   - ./vehicle-frontend:/app
+    ports:
+      - "3001:80"
+    networks:
+      - app-network
+  backend:
+    build:
+      context: ./vehicle-backend-bloom
+      dockerfile: Dockerfile
+    # volumes:
+    #   - ./vehicle-backend-bloom/app:/code/app
+    environment:
+      - MONGO_HOST=db
+      - MONGO_PORT=27017
+      - MONGO_DB=vehicle_db
+      - MONGO_USER=admin
+      - MONGO_PASSWORD=admin
+    ports:
+      - "8050:80"
+    networks:
+      - app-network
+  db:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - ./db:/data/db
+    networks:
+      - app-network
+
+  mongo-express:
+    image: mongo-express:latest
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: db
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_MONGODB_AUTH_DATABASE: admin
+      ME_CONFIG_MONGODB_AUTH_USERNAME: admin
+      ME_CONFIG_MONGODB_AUTH_PASSWORD: admin
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
+    networks:
+      - app-network
+
+# Networks
+networks:
+  app-network:
