@@ -19,3 +19,14 @@ kubectl apply -f k8s-deployment.yaml
 ```
 
 Expose the service using a LoadBalancer or NodePort as per your Kubernetes setup.
+
+## Using the already built application image
+
+The application image is available in the Docker Hub (arm64 version).
+
+Pull the image using:
+
+```bash
+docker pull srpillai/vehicleapp-frontend:latest      # Frontend
+docker pull srpillai/vehicleapp-backend-bloom:latest # Backend
+```
