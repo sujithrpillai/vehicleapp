@@ -9,7 +9,7 @@ To run the app in Docker compose,
 ```bash
 docker compose up -d
 ```
-
+Access the development frontend at [http://localhost:3000](http://localhost:3000).
 Access the production frontend at [http://localhost:3001](http://localhost:3001).
 
 To run the app in kubernetes,
@@ -29,4 +29,15 @@ Pull the image using:
 ```bash
 docker pull srpillai/vehicleapp-frontend:latest      # Frontend
 docker pull srpillai/vehicleapp-backend-bloom:latest # Backend
+```
+
+## Image Build steps for reference
+
+```bash
+cd vehicle-backend-bloom
+docker build -t srpillai/vehicleapp-backend-bloom:latest . -f Dockerfile --no-cache
+cd ../vehicle-frontend
+docker build -t srpillai/vehicleapp-frontend:latest . -f Dockerfile.prod --no-cache
+docker push srpillai/vehicleapp-backend-bloom:latest
+docker push srpillai/vehicleapp-frontend:latest
 ```
