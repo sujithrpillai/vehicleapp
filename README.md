@@ -102,3 +102,4 @@ helm upgrade --install prometheus-adapter prometheus-community/prometheus-adapte
   --namespace monitoring -f values.yaml
 
 kubectl apply -f hpa.yaml
+
