@@ -1,6 +1,6 @@
 [submodule "vehicle-backend-bloom"]
 	path = vehicle-backend-bloom
-	url = git@github.com:sujithrpillai/vehicle-backend-bloom.git
+	url = https://github.com/sujithrpillai/vehicle-backend-bloom.git
 [submodule "vehicle-frontend"]
 	path = vehicle-frontend
-	url = git@github.com:sujithrpillai/vehicle-frontend.git
+	url = https://github.com/sujithrpillai/vehicle-frontend.git
