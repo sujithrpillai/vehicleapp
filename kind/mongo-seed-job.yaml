@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-seed-job
+  namespace: vehicle-app
+spec:
+  template:
+    spec:
+      initContainers:
+        - name: wait-for-mongo
+          image: busybox
+          command: ['sh', '-c', 'until nc -z db 27017; do echo waiting for MongoDB; sleep 2; done;']
+      containers:
+        - name: mongo-seed
+          image: mongo:latest
+          command: ["mongoimport"]
+          args:
+            - "--host=db"
+            - "--port=27017"
+            - "--username=admin"
+            - "--password=admin"
+            - "--authenticationDatabase=admin"
+            - "--db=vehicle_db"
+            - "--collection=vehicles"
+            - "--drop"
+            - "--file=/seed/vehicles.json"
+          volumeMounts:
+            - name: seed-volume
+              mountPath: /seed
+      restartPolicy: OnFailure
+      volumes:
+        - name: seed-volume
+          configMap:
+            name: mongo-seed-data

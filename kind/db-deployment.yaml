@@ -1,0 +1,97 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: db
+  namespace: vehicle-app
+spec:
+  serviceName: "mongo-service"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      labels:
+        app: db
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:latest
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: admin
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: admin
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-data
+              mountPath: /data/db
+      volumes:
+            - name: mongo-data
+              persistentVolumeClaim:
+                claimName: mongo-pvc
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mongo-pv
+  namespace: vehicle-app
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: "" 
+  hostPath:
+    path: /tmp/mongo-data
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mongo-pvc
+  namespace: vehicle-app
+spec:
+  volumeName: mongo-pv
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: "" 
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-express
+  namespace: vehicle-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-express
+  template:
+    metadata:
+      labels:
+        app: mongo-express
+    spec:
+      containers:
+        - name: mongo-express
+          image: mongo-express:latest
+          ports:
+            - containerPort: 8081
+          env:
+            - name: ME_CONFIG_MONGODB_SERVER
+              value: db
+            - name: ME_CONFIG_MONGODB_PORT
+              value: "27017"
+            - name: ME_CONFIG_MONGODB_AUTH_DATABASE
+              value: admin
+            - name: ME_CONFIG_MONGODB_AUTH_USERNAME
+              value: admin
+            - name: ME_CONFIG_MONGODB_AUTH_PASSWORD
+              value: admin
+            - name: ME_CONFIG_BASICAUTH_USERNAME
+              value: admin
+            - name: ME_CONFIG_BASICAUTH_PASSWORD
+              value: admin

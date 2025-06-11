@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: backend
+  name: backend
+  namespace: vehicle-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: 874954573048.dkr.ecr.us-east-1.amazonaws.com/vehicle-backend-bloom:latest
+          imagePullPolicy: Always
+          env:
+            - name: MONGO_HOST
+              value: mongo-service
+            - name: MONGO_PORT
+              value: "27017"
+            - name: MONGO_DB
+              value: vehicle_db
+            - name: MONGO_USER
+              value: admin
+            - name: MONGO_PASSWORD
+              value: admin
