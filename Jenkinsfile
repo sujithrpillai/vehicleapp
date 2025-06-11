@@ -39,6 +39,7 @@ pipeline {
                         aws eks update-kubeconfig --region $AWS_REGION --name sr
                         kubectl get nodes
                         kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
+                        kubectl apply -f ./eks/
                     '''
                 }
             }
