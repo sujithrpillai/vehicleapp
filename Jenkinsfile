@@ -10,21 +10,12 @@ pipeline {
     }
 
     stages {
-        // stage('Clone Repository') {
-        //     steps {
-        //         git branch: 'main', url: 'https://github.com/sujithrpillai/vehicleapp.git'
-        //         sh '''
-        //             ls -l vehicle-frontend
-        //         '''
-        //     }
-        // }
-
         stage('Build Docker Image') {
             steps {
                 dir('vehicle-frontend') {
                     sh '''
                         ls -l
-                        docker build -t ${ECR_REPO}:${IMAGE_TAG} .-f ./Dockerfile.prod
+                        docker build -t ${ECR_REPO}:${IMAGE_TAG} . -f ./Dockerfile.prod
                     '''
                 }
             }
