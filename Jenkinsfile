@@ -10,47 +10,53 @@ pipeline {
     }
 
     stages {
-        stage('Build Frontend Docker Image') {
-            steps {
-                dir('vehicle-frontend') {
-                    sh '''
-                        ls -l
-                        docker build -t ${FRONTEND_IMAGE}:${IMAGE_TAG} . -f ./Dockerfile.prod
-                    '''
+        stage('Build Docker Images') {
+            parallel {
+                stage('Build Frontend Docker Image') {
+                    steps {
+                        dir('vehicle-frontend') {
+                            sh '''
+                                ls -l
+                                docker build -t ${FRONTEND_IMAGE}:${IMAGE_TAG} . -f ./Dockerfile.prod
+                            '''
+                        }
+                    }
+                }
+                stage('Build Backend Docker Image') {
+                    steps {
+                        dir('vehicle-backend-bloom') {
+                            sh '''
+                                ls -l
+                                docker build -t ${BACKEND_IMAGE}:${IMAGE_TAG} . -f ./Dockerfile
+                            '''
+                        }
+                    }
                 }
             }
         }
-
-        stage('Push Frontend image to ECR') {
-            steps {
-                withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-                    sh '''
-                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${FRONTEND_IMAGE}
-                        docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}
-                        docker logout
-                    '''
+        stage('Push Docker Images to ECR') {
+            parallel {
+                stage('Push Frontend image to ECR') {
+                    steps {
+                        withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
+                            sh '''
+                                aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${FRONTEND_IMAGE}
+                                docker push ${FRONTEND_IMAGE}:${IMAGE_TAG}
+                                docker logout
+                            '''
+                        }
+                    }
                 }
-            }
-        }
-        stage('Build Backend Docker Image') {
-            steps {
-                dir('vehicle-backend-bloom') {
-                    sh '''
-                        ls -l
-                        docker build -t ${BACKEND_IMAGE}:${IMAGE_TAG} . -f ./Dockerfile
-                    '''
-                }
-            }
-        }
-
-        stage('Push Backend image to ECR') {
-            steps {
-                withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-                    sh '''
-                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${BACKEND_IMAGE}
-                        docker push ${BACKEND_IMAGE}:${IMAGE_TAG}
-                        docker logout
-                    '''
+                stage('Push Backend image to ECR') {
+                    steps {
+                        withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
+                            sh '''
+                                aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${BACKEND_IMAGE}
+                                docker push ${BACKEND_IMAGE}:${IMAGE_TAG}
+                                docker logout
+                            '''
+                        }
+                    }
                 }
             }
         }
