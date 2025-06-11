@@ -6,7 +6,7 @@ pipeline {
         FRONTEND_IMAGE = '874954573048.dkr.ecr.us-east-1.amazonaws.com/vehicle-frontend'
         BACKEND_IMAGE = '874954573048.dkr.ecr.us-east-1.amazonaws.com/vehicle-backend-bloom'
         IMAGE_TAG = 'latest'
-        NAMESPACE = "vehicle-app"
+        NAMESPACE = "vehicle-app-${env.BRANCH_NAME?.replaceAll('[^a-zA-Z0-9-]', '-').toLowerCase()}"
     }
 
     stages {
