@@ -96,6 +96,7 @@ helm install prometheus-adapter prometheus-community/prometheus-adapter --namesp
 ```
 kubectl patch svc prometheus-server -n monitoring -p '{"spec": {"type": "LoadBalancer"}}'
 ```
+
 cd HPA
 helm upgrade --install prometheus-adapter prometheus-community/prometheus-adapter \
   --namespace monitoring -f values.yaml
