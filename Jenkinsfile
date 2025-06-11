@@ -12,8 +12,14 @@ pipeline {
         stage('Set Environment') {
             steps {
                 script {
-                    def branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
-                    branch = branch ?: 'development'
+                    // Try Jenkins env var first, fallback to git command, then to 'development'
+                    def branch = env.BRANCH_NAME
+                    if (!branch || branch == 'HEAD') {
+                        branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    }
+                    if (!branch || branch == 'HEAD') {
+                        branch = 'development'
+                    }
                     env.NAMESPACE = "vehicle-app-${branch.replaceAll('[^a-zA-Z0-9-]', '-').toLowerCase()}"
                 }
             }
