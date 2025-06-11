@@ -12,7 +12,9 @@ pipeline {
         stage('Set Environment') {
             steps {
                 script {
-                    env.NAMESPACE = "vehicle-app-${env.BRANCH_NAME.replaceAll('[^a-zA-Z0-9-]', '-').toLowerCase()}"
+                    def branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    branch = branch ?: 'development'
+                    env.NAMESPACE = "vehicle-app-${branch.replaceAll('[^a-zA-Z0-9-]', '-').toLowerCase()}"
                 }
             }
         }
