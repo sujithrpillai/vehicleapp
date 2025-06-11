@@ -6,10 +6,18 @@ pipeline {
         FRONTEND_IMAGE = '874954573048.dkr.ecr.us-east-1.amazonaws.com/vehicle-frontend'
         BACKEND_IMAGE = '874954573048.dkr.ecr.us-east-1.amazonaws.com/vehicle-backend-bloom'
         IMAGE_TAG = 'latest'
-        NAMESPACE = "vehicle-app"
     }
 
     stages {
+        stage('Set Environment') {
+            steps {
+                script {
+                    def branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    branch = branch ?: 'development'
+                    env.NAMESPACE = "vehicle-app-${branch.replaceAll('[^a-zA-Z0-9-]', '-').toLowerCase()}"
+                }
+            }
+        }
         stage('Build Docker Images') {
             parallel {
                 stage('Build Frontend Docker Image') {
