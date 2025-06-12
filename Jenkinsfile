@@ -104,6 +104,7 @@ pipeline {
                         kubectl get nodes
                         kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
                         kubectl config set-context --current --namespace=$NAMESPACE
+                        kubectl apply -f ./eks/mongo-secret.yaml
                         kubectl apply -f ./eks/db*
                         kubectl apply -f ./eks/mongo-seed-configMap.yaml
                         kubectl apply -f ./eks/mongo-seed-job.yaml
