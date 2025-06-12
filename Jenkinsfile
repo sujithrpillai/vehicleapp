@@ -36,6 +36,7 @@ pipeline {
                             echo "Branch Name: ${branch}"
                             if (!branch || branch == 'HEAD') {
                                 branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                                 echo "Branch Name: ${branch}"
                             }
                             if (!branch || branch == 'HEAD') {
                                 branch = 'development'
