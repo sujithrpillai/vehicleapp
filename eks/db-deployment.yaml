@@ -18,9 +18,15 @@ spec:
           image: mongo:latest
           env:
             - name: MONGO_INITDB_ROOT_USERNAME
-              value: admin
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_USER
             - name: MONGO_INITDB_ROOT_PASSWORD
-              value: admin
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_PASSWORD
           ports:
             - containerPort: 27017
           volumeMounts:

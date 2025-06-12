@@ -16,13 +16,24 @@ spec:
           args:
             - "--host=db"
             - "--port=27017"
-            - "--username=admin"
-            - "--password=admin"
+            - "--username=$(MONGO_USER)"
+            - "--password=$(MONGO_PASSWORD)"
             - "--authenticationDatabase=admin"
             - "--db=vehicle_db"
             - "--collection=vehicles"
             - "--drop"
             - "--file=/seed/vehicles.json"
+          env:
+            - name: MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_USER
+            - name: MONGO_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_PASSWORD          
           volumeMounts:
             - name: seed-volume
               mountPath: /seed
