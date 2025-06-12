@@ -138,3 +138,4 @@ To deploy the Vehicle App using Terraform and Jenkins, follow these steps:
 
 1. A sample Jenkinsfile is provided in the repository to help you get started with the pipeline configuration.
 2. A sample Terraform configuration is also provided to set up the EKS cluster.
+
