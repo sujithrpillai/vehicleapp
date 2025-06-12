@@ -35,7 +35,10 @@ pipeline {
                             def branch = env.BRANCH_NAME
                             echo "Branch Name: ${branch}"
                             if (!branch || branch == 'HEAD') {
-                                branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                                branch = sh(
+                                    script: "git symbolic-ref --short refs/remotes/origin/HEAD || git rev-parse --abbrev-ref HEAD",
+                                    returnStdout: true
+                                ).trim()
                                  echo "Branch Name: ${branch}"
                             }
                             if (!branch || branch == 'HEAD') {
