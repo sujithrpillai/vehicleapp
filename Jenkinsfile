@@ -100,6 +100,7 @@ pipeline {
                         aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
                         kubectl get nodes
                         kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
+                        kubectl config set-context --current --namespace=$NAMESPACE
                         kubectl apply -f ./eks/db*
                         kubectl apply -f ./eks/mongo-seed-configMap.yaml
                         kubectl apply -f ./eks/mongo-seed-job.yaml
@@ -114,6 +115,7 @@ pipeline {
                         aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
                         kubectl get nodes
                         kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
+                        kubectl config set-context --current --namespace=$NAMESPACE
                         kubectl apply -f ./eks/backend-deployment.yaml
                         kubectl apply -f ./eks/backend-service.yaml
                     '''
@@ -125,8 +127,8 @@ pipeline {
                 withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
                     sh '''
                         aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-                        kubectl get nodes
                         kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
+                        kubectl config set-context --current --namespace=$NAMESPACE
                         kubectl apply -f ./eks/frontend-deployment.yaml
                         kubectl apply -f ./eks/frontend-service.yaml
                     '''
