@@ -22,6 +22,8 @@ pipeline {
                                     returnStdout: true
                                 ).trim()
                             }
+                            echo "Backend Image: ${BACKEND_IMAGE}"
+                            echo "Frontend Image: ${FRONTEND_IMAGE}"
                         }
                     }
                 }
@@ -48,7 +50,6 @@ pipeline {
                     steps {
                         dir('vehicle-frontend') {
                             sh '''
-                                ls -l
                                 docker build -t ${FRONTEND_IMAGE}:${IMAGE_TAG} . -f ./Dockerfile.prod
                             '''
                         }
@@ -58,7 +59,6 @@ pipeline {
                     steps {
                         dir('vehicle-backend-bloom') {
                             sh '''
-                                ls -l
                                 docker build -t ${BACKEND_IMAGE}:${IMAGE_TAG} . -f ./Dockerfile
                             '''
                         }
@@ -126,12 +126,11 @@ pipeline {
                         aws eks update-kubeconfig --region $AWS_REGION --name sr
                         kubectl get nodes
                         kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
-                        kubectl apply -f ./eks/backend-deployment.yaml
-                        kubectl apply -f ./eks/backend-service.yaml
+                        kubectl apply -f ./eks/frontend-deployment.yaml
+                        kubectl apply -f ./eks/frontend-service.yaml
                     '''
                 }
             }
         }
-
     }
 }
