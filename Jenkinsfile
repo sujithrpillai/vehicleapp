@@ -107,6 +107,7 @@ pipeline {
                         kubectl apply -f ./eks/db*
                         kubectl apply -f ./eks/mongo-seed-configMap.yaml
                         kubectl apply -f ./eks/mongo-seed-job.yaml
+                        kubectl wait --for=condition=complete --timeout=100s job/mongo-seed-job
                     '''
                 }
             }
