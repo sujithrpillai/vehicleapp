@@ -2,103 +2,150 @@
 
 This is a simple vehicle app that allows Vehicle inspectors to check whether a vehicle needs to be seized or not.
 
-## Building the App
+## Application Demo
 
-To run the app in Docker compose,
+Following is a demo of the application:
+
+![Vehicle App Demo](./documentation/Demo.gif)
+
+## Application Architecture
+
+Following is the architecture of the application:
+
+![Vehicle App Architecture](./documentation/Architecture.png)
+
+## Building and deploying the App manually
+
+The steps below will guide you through building and deploying the Vehicle App manually using Docker and Kubernetes.
+
+### Infrastructure Setup
+
+Deploy the EKS cluster using `eksctl`. This is going to take a while, so you can continue with the next steps.
+
+```bash
+eksctl create cluster -f cluster.yaml
+```
+
+Create two ECR repositories in your AWS account:
+
+```bash
+aws ecr create-repository --repository-name vehicle-backend-bloom
+aws ecr create-repository --repository-name vehicle-frontend
+BACKEND_IMAGE=$(aws ecr describe-repositories --repository-names vehicle-backend-bloom --query "repositories[0].repositoryUri" --output text)
+FRONTEND_IMAGE=$(aws ecr describe-repositories --repository-names vehicle-frontend --query "repositories[0].repositoryUri" --output text)
+```
+
+### Application Build
+
+Build the backend image and push to ECR,
+
+```bash
+cd vehicle-backend-bloom
+docker build --platform linux/amd64 -t ${BACKEND_IMAGE}:latest .
+docker push ${BACKEND_IMAGE}:latest
+```
+
+Build the frontend image and push to ECR,
+
+```bash
+cd ../vehicle-frontend
+docker build --platform linux/amd64 -t ${FRONTEND_IMAGE}:latest . -f Dockerfile.prod
+docker push ${FRONTEND_IMAGE}:latest
+```
+
+### Running the application locally with Docker Compose
+
+To run the application locally using Docker Compose, ensure you have Docker installed and then execute the following command:
 
 ```bash
 docker compose up -d
 ```
-Access the development frontend at [http://localhost:3000](http://localhost:3000).
-Access the production frontend at [http://localhost:3001](http://localhost:3001).
 
-To run the app in kubernetes,
+### Enable Kubernetes Metrics Server
 
-```bash
-kubectl apply -f k8s-deployment.yaml
-```
-
-Expose the service using a LoadBalancer or NodePort as per your Kubernetes setup.
-
-## Using the already built application image
-
-The application image is available in the Docker Hub (arm64 version).
-
-Pull the image using:
+Ensure that the Kubernetes Metrics Server is installed in your EKS cluster. This is required for Horizontal Pod Autoscaling.
 
 ```bash
-docker pull srpillai/vehicleapp-frontend:latest      # Frontend
-docker pull srpillai/vehicleapp-backend-bloom:latest # Backend
-```
-
-## Image Build steps for reference
-
-```bash
-cd vehicle-backend-bloom
-docker build -t srpillai/vehicleapp-backend-bloom:latest . -f Dockerfile --no-cache
-cd ../vehicle-frontend
-docker build -t srpillai/vehicleapp-frontend:latest . -f Dockerfile.prod --no-cache
-docker push srpillai/vehicleapp-backend-bloom:latest
-docker push srpillai/vehicleapp-frontend:latest
-```
-
-
-# AWS Steps
-
-```bash
-# Create the EKS cluster
-eksctl create cluster -f cluster.yaml
-# OR
-cd terraform
-terraform init
-terraform plan
-terraform apply -auto-approve
-aws eks update-kubeconfig --name <cluster name>>
-```
-
-```bash
-
-# Create the ECR repositories
-aws ecr create-repository --repository-name vehicle-backend-bloom
-aws ecr create-repository --repository-name vehicle-frontend
-
-# Build the backend image and push to ECR
-cd vehicle-backend-bloom
-docker build --platform linux/amd64 -t vehicle-backend-bloom .
-docker tag vehicle-backend-bloom:latest 874954573048.dkr.ecr.us-east-1.amazonaws.com/vehicle-backend-bloom:latest
-docker push 874954573048.dkr.ecr.us-east-1.amazonaws.com/vehicle-backend-bloom:latest
-
-# Build the frontend image and push to ECR
-cd ../vehicle-frontend
-docker build --platform linux/amd64 -t vehicle-frontend . -f Dockerfile.prod
-docker tag vehicle-frontend:latest 874954573048.dkr.ecr.us-east-1.amazonaws.com/vehicle-frontend:latest
-docker push 874954573048.dkr.ecr.us-east-1.amazonaws.com/vehicle-frontend:latest
-```
-
-```bash
-# Deploy the application
-kubectl create namespace vehicle-app
-kubectl config set-context --current --namespace=vehicle-app
-kubectl kubectl apply -f backend-deployment.yaml
-kubectl patch storageclass gp2 -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-```
-
-
-# Install Prometheus for Monitoring
-```bash
+kubectl create namespace monitoring
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
-kubectl create namespace monitoring
 helm install prometheus prometheus-community/prometheus --namespace monitoring
 helm install prometheus-adapter prometheus-community/prometheus-adapter --namespace monitoring
-```
-# Modify the prometheus-server service to use LoadBalancer
-```
-kubectl patch svc prometheus-server -n monitoring -p '{"spec": {"type": "LoadBalancer"}}'
-```
-
-cd HPA
 helm upgrade --install prometheus-adapter prometheus-community/prometheus-adapter \
-  --namespace monitoring -f values.yaml
+  --namespace monitoring -f ./eks/HPA/hpa-values.yaml
+```
 
-kubectl apply -f hpa.yaml
+### Deploy the Application
+
+Make sure the EKS cluster is up and running, then deploy the application using Kubernetes manifests.
+
+Create a namespace for the application:
+
+```bash
+NAMESPACE=vehicle-app
+kubectl create namespace $NAMESPACE
+kubectl config set-context --current --namespace=$NAMESPACE
+```
+
+Deploy the application:
+
+```bash
+kubectl apply -f ./eks/
+kubectl apply -f ./eks/HPA/hpa.yaml
+```
+
+You can check the status of the cluster and pods using:
+
+```bash
+kubectl get pods
+```
+A sample view of the pods in the EKS GUI is shown below:
+
+![Cluster](./documentation/cluster.png)
+
+Check the loadbalancer service to get the external IP:
+
+### Accessing the Application
+
+```bash
+kubectl get -f ./eks/frontend-service.yaml 
+```
+
+Access the frontend at the external IP address provided by the LoadBalancer service.
+
+### Cleanup
+
+To clean up the resources created during this setup, you can delete the namespace and the EKS cluster:
+
+```bash
+kubectl delete namespace $NAMESPACE
+kubectl delete namespace monitoring
+eksctl delete cluster -f cluster.yaml
+```
+
+## Deploy with Terraform and Jenkins
+
+To deploy the Vehicle App using Terraform and Jenkins, follow these steps:
+
+1. **Set up Jenkins**: Ensure you have a Jenkins server running and configured with the necessary plugins for Terraform and Kubernetes.
+2. **Create a Jenkins Pipeline**: Create a Jenkins pipeline that will:
+   - Clone the repository containing the Vehicle App code.
+   - Use Terraform to provision the EKS cluster and deploy the application.
+   - Build and push Docker images to ECR.
+   - Apply Kubernetes manifests to deploy the application.
+   - **Configure Jenkins Credentials**: Ensure that Jenkins has the necessary AWS credentials and permissions to interact with EKS and ECR
+   - **Configure Jenkins Environment Variables**: Set environment variables for the ECR repository URIs and other necessary configurations.
+   - **Trigger the Pipeline**: Run the Jenkins pipeline to deploy the Vehicle App.
+
+Following is a sample Jenkins pipeline view,
+
+![Jenkin Pipelines](./documentation/jenkins-pipelines.png)
+
+Following is a sample execution of the Jenkins pipeline,
+
+![Jenkins Execution](./documentation/jenkins-execution.png)
+
+### Notes
+
+1. A sample Jenkinsfile is provided in the repository to help you get started with the pipeline configuration.
+2. A sample Terraform configuration is also provided to set up the EKS cluster.

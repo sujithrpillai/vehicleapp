@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: mongo
-  namespace: vehicle-app
 spec:
   serviceName: "mongo-service"
   replicas: 1
@@ -40,8 +39,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mongo-service
-  namespace: vehicle-app
+  name: db
 spec:
   selector:
     app: db
