@@ -2,13 +2,13 @@
 
 This is a simple vehicle app that allows Vehicle inspectors to check whether a vehicle needs to be seized or not.
 
-# Application Demo
+## Application Demo
 
 Following is a demo of the application:
 
 ![Vehicle App Demo](./Demo.gif)
 
-# Application Architecture
+## Application Architecture
 
 Following is the architecture of the application:
 
@@ -19,6 +19,7 @@ Following is the architecture of the application:
 The steps below will guide you through building and deploying the Vehicle App manually using Docker and Kubernetes.
 
 ### Infrastructure Setup
+
 Deploy the EKS cluster using `eksctl`. This is going to take a while, so you can continue with the next steps.
 
 ```bash
@@ -35,6 +36,7 @@ FRONTEND_IMAGE=$(aws ecr describe-repositories --repository-names vehicle-fronte
 ```
 
 ### Application Build
+
 Build the backend image and push to ECR,
 
 ```bash
@@ -105,9 +107,11 @@ Check the loadbalancer service to get the external IP:
 ```bash
 kubectl get -f ./eks/frontend-service.yaml 
 ```
+
 Access the frontend at the external IP address provided by the LoadBalancer service.
 
 ### Cleanup
+
 To clean up the resources created during this setup, you can delete the namespace and the EKS cluster:
 
 ```bash
