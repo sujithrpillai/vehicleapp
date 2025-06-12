@@ -26,6 +26,12 @@ spec:
             - name: MONGO_DB
               value: vehicle_db
             - name: MONGO_USER
-              value: admin
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_USER
             - name: MONGO_PASSWORD
-              value: admin
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_PASSWORD
