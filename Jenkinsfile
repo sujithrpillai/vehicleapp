@@ -36,7 +36,7 @@ pipeline {
                             echo "Branch Name: ${branch}"
                             if (!branch || branch == 'HEAD') {
                                 branch = sh(
-                                    script: "git for-each-ref --format='%(objectname) %(refname:short)' refs/heads | awk '/^$(git rev-parse HEAD)/ {print \$2}',
+                                    script: "git branch --remote --contains | sed 's|[[:space:]]*origin/||'",
                                     returnStdout: true
                                 ).trim()
                                  echo "Branch Name: ${branch}"
