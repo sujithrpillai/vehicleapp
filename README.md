@@ -6,13 +6,13 @@ This is a simple vehicle app that allows Vehicle inspectors to check whether a v
 
 Following is a demo of the application:
 
-![Vehicle App Demo](./Demo.gif)
+![Vehicle App Demo](./documentation/Demo.gif)
 
 ## Application Architecture
 
 Following is the architecture of the application:
 
-![Vehicle App Architecture](./Architecture.png)
+![Vehicle App Architecture](./documentation/Architecture.png)
 
 ## Building and deploying the App manually
 
@@ -99,6 +99,9 @@ You can check the status of the cluster and pods using:
 ```bash
 kubectl get pods
 ```
+A sample view of the pods in the EKS GUI is shown below:
+
+![Cluster](./documentation/cluster.png)
 
 Check the loadbalancer service to get the external IP:
 
@@ -134,8 +137,15 @@ To deploy the Vehicle App using Terraform and Jenkins, follow these steps:
    - **Configure Jenkins Environment Variables**: Set environment variables for the ECR repository URIs and other necessary configurations.
    - **Trigger the Pipeline**: Run the Jenkins pipeline to deploy the Vehicle App.
 
+Following is a sample Jenkins pipeline view,
+
+![Jenkin Pipelines](./documentation/jenkins-pipelines.png)
+
+Following is a sample execution of the Jenkins pipeline,
+
+![Jenkins Execution](./documentation/jenkins-execution.png)
+
 ### Notes
 
 1. A sample Jenkinsfile is provided in the repository to help you get started with the pipeline configuration.
 2. A sample Terraform configuration is also provided to set up the EKS cluster.
-
