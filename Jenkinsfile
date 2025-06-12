@@ -33,6 +33,7 @@ pipeline {
                         script {
                             // Try Jenkins env var first, fallback to git command, then to 'development'
                             def branch = env.BRANCH_NAME
+                            echo "Branch Name: ${branch}"
                             if (!branch || branch == 'HEAD') {
                                 branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
                             }
