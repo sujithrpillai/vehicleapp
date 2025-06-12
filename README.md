@@ -66,6 +66,8 @@ docker compose up -d
 Ensure that the Kubernetes Metrics Server is installed in your EKS cluster. This is required for Horizontal Pod Autoscaling.
 
 ```bash
+# Enable gp2 as the default storage class in AWS EKS
+kubectl patch storageclass gp2 -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 kubectl create namespace monitoring
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo update
