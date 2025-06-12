@@ -4,6 +4,7 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
         IMAGE_TAG = 'latest'
+        CLUSTER_NAME = 'vehicle'
     }
 
     stages {
@@ -96,7 +97,7 @@ pipeline {
             steps {
                 withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
                     sh '''
-                        aws eks update-kubeconfig --region $AWS_REGION --name sr
+                        aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
                         kubectl get nodes
                         kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
                         kubectl apply -f ./eks/db*
@@ -110,7 +111,7 @@ pipeline {
             steps {
                 withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
                     sh '''
-                        aws eks update-kubeconfig --region $AWS_REGION --name sr
+                        aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
                         kubectl get nodes
                         kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
                         kubectl apply -f ./eks/backend-deployment.yaml
@@ -123,7 +124,7 @@ pipeline {
             steps {
                 withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
                     sh '''
-                        aws eks update-kubeconfig --region $AWS_REGION --name sr
+                        aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
                         kubectl get nodes
                         kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
                         kubectl apply -f ./eks/frontend-deployment.yaml
