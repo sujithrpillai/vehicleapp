@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: mongo-seed-job
-  namespace: vehicle-app
 spec:
   template:
     spec:

@@ -4,7 +4,6 @@ metadata:
   labels:
     app: backend
   name: backend
-  namespace: vehicle-app
 spec:
   replicas: 1
   selector:

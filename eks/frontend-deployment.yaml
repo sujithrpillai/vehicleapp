@@ -4,7 +4,6 @@ metadata:
   labels:
     app: frontend
   name: frontend
-  namespace: vehicle-app
 spec:
   replicas: 1
   selector:
