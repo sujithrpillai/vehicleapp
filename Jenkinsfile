@@ -34,7 +34,10 @@ pipeline {
                             // Try Jenkins env var first, fallback to git command, then to 'development'
                             def branch = env.BRANCH_NAME
                             if (!branch || branch == 'HEAD') {
-                                branch = sh(script: "git rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                                branch = sh(
+                                    script: "git branch --remote --contains | sed 's|[[:space:]]*origin/||'",
+                                    returnStdout: true
+                                ).trim()
                             }
                             if (!branch || branch == 'HEAD') {
                                 branch = 'development'
