@@ -135,7 +135,7 @@ pipeline {
                 script {
                     // Update the image tag in frontend-deployment.yaml
                     sh '''
-                        sed -i.bak 's|\(image: .*/vehicle-frontend:\).*|\1'"${IMAGE_TAG}"'|' ./eks/frontend-deployment.yaml
+                        sed -i.bak 's|(image: .*/vehicle-frontend:).*|\1'"${IMAGE_TAG}"'|' ./eks/frontend-deployment.yaml
                     '''
                 }
             }
