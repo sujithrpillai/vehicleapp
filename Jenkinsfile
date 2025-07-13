@@ -152,5 +152,20 @@ pipeline {
                 }
             }
         }
+        stage('Blue-Green Deploy Frontend') {
+            steps {
+                withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
+                    sh '''
+                        # Deploy green deployment with the new image tag
+                        sed -i.bak 's|(image: .*/vehicle-frontend:).*|\1'"${IMAGE_TAG}"'|' ./eks/frontend-green-deployment.yaml
+                        kubectl apply -f ./eks/frontend-green-deployment.yaml
+                        kubectl rollout status deployment/frontend-green
+
+                        # Switch service to green
+                        kubectl patch service frontend-service -p '{"spec":{"selector":{"app":"frontend","version":"green"}}}'
+                    '''
+                }
+            }
+        }
     }
 }
