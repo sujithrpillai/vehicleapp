@@ -162,7 +162,7 @@ pipeline {
                         kubectl rollout status deployment/frontend-green
 
                         # Switch service to green
-                        kubectl patch service frontend-service -p '{"spec":{"selector":{"app":"frontend","version":"green"}}}'
+                        kubectl patch service frontend -p '{"spec":{"selector":{"app":"frontend","version":"green"}}}'
                     '''
                 }
             }
