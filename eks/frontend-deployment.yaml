@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: 874954573048.dkr.ecr.us-east-1.amazonaws.com/vehicle-frontend:${IMAGE_TAG}
+          image: 874954573048.dkr.ecr.us-east-1.amazonaws.com/vehicle-frontend:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
