@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         AWS_REGION = 'us-east-1'
-        IMAGE_TAG = 'latest'
+        IMAGE_TAG = '' // Will be set dynamically
         CLUSTER_NAME = 'rto'
     }
 
@@ -13,6 +13,8 @@ pipeline {
                 stage('Set Image Tag') {
                     steps {
                         script {
+                            // Set IMAGE_TAG to Jenkins build number
+                            env.IMAGE_TAG = env.BUILD_NUMBER
                             withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
                                 env.BACKEND_IMAGE = sh(
                                     script: "aws ecr describe-repositories --repository-names vehicle-backend-bloom --query \"repositories[0].repositoryUri\" --output text",
@@ -25,6 +27,7 @@ pipeline {
                             }
                             echo "Backend Image: ${BACKEND_IMAGE}"
                             echo "Frontend Image: ${FRONTEND_IMAGE}"
+                            echo "Image Tag: ${IMAGE_TAG}"
                         }
                     }
                 }
@@ -123,6 +126,16 @@ pipeline {
                         kubectl config set-context --current --namespace=$NAMESPACE
                         kubectl apply -f ./eks/backend-deployment.yaml
                         kubectl apply -f ./eks/backend-service.yaml
+                    '''
+                }
+            }
+        }
+        stage('Update Frontend Deployment YAML') {
+            steps {
+                script {
+                    // Update the image tag in frontend-deployment.yaml
+                    sh '''
+                        sed -i.bak 's|\(image: .*/vehicle-frontend:\).*|\1'"${IMAGE_TAG}"'|' ./eks/frontend-deployment.yaml
                     '''
                 }
             }
