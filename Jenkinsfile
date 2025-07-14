@@ -4,7 +4,7 @@ pipeline {
     environment {
         AWS_REGION = 'us-east-1'
         IMAGE_TAG = "${BUILD_NUMBER}"
-        CLUSTER_NAME = 'rto'
+        CLUSTER_NAME = 'vehicle'
     }
 
     stages {
