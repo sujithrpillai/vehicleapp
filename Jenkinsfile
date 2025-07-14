@@ -72,6 +72,16 @@ pipeline {
                 }
             }
         }
+        stage('Run Tests') {
+            steps {
+                dir('vehicle-frontend') {
+                    sh '''
+                        docker build -t vehicle-frontend-test:latest . -f ./Dockerfile.test
+                        docker run --rm vehicle-frontend-test:latest
+                    '''
+                }
+            }
+        }
         stage('Push Docker Images to ECR') {
             parallel {
                 stage('Push Frontend image to ECR') {
