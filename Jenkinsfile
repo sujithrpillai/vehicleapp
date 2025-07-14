@@ -54,7 +54,7 @@ pipeline {
             parallel {
                 stage('Build Frontend Docker Image') {
                     steps {
-                        dir('vehicle-frontend') {
+                        dir('vehicle-frontend_v2') {
                             sh '''
                                 docker build -t ${FRONTEND_IMAGE}:${IMAGE_TAG} . -f ./Dockerfile.prod
                             '''
@@ -63,7 +63,7 @@ pipeline {
                 }
                 stage('Build Backend Docker Image') {
                     steps {
-                        dir('vehicle-backend-bloom') {
+                        dir('vehicle-backend-bloom_v2') {
                             sh '''
                                 docker build -t ${BACKEND_IMAGE}:${IMAGE_TAG} . -f ./Dockerfile
                             '''
@@ -74,7 +74,7 @@ pipeline {
         }
         stage('Run Tests') {
             steps {
-                dir('vehicle-frontend') {
+                dir('vehicle-frontend_v2') {
                     sh '''
                         docker build -t vehicle-frontend-test:latest . -f ./Dockerfile.test
                         docker run --rm vehicle-frontend-test:latest
