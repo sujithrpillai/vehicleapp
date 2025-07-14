@@ -72,7 +72,7 @@ pipeline {
                 }
             }
         }
-        stage('Run Tests') {
+        stage('Run Unit Tests') {
             steps {
                 dir('vehicle-frontend_v2') {
                     sh '''

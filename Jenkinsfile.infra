@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+    environment {
+        AWS_REGION = 'us-east-1'
+        CLUSTER_NAME = 'rto'
+    }
+
+    stages {
+        stage('Build EKS Cluster') {
+                steps {
+                    withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
+                        sh '''
+                            eksctl create cluster -f ./cluster.yaml
+                        '''
+                    }
+                }
+            }
+        }
+}
