@@ -1,6 +1,0 @@
-[submodule "vehicle-backend-bloom"]
-	path = vehicle-backend-bloom
-	url = https://github.com/sujithrpillai/vehicle-backend-bloom.git
-[submodule "vehicle-frontend"]
-	path = vehicle-frontend
-	url = https://github.com/sujithrpillai/vehicle-frontend.git

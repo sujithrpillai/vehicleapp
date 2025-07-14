@@ -1,10 +1,10 @@
 services:
   frontend:
     build:
-      context: ./vehicle-frontend
+      context: ./vehicle-frontend_v2
       dockerfile: Dockerfile
     volumes:
-      - ./vehicle-frontend:/app
+      - ./vehicle-frontend_v2:/app
       - /app/node_modules
     ports:
       - "3000:3000"
@@ -13,17 +13,17 @@ services:
 
   frontend-prod:
     build:
-      context: ./vehicle-frontend
+      context: ./vehicle-frontend_v2
       dockerfile: Dockerfile.prod
     # volumes:
-    #   - ./vehicle-frontend:/app
+    #   - ./vehicle-frontend_v2:/app
     ports:
       - "3001:80"
     networks:
       - app-network
   backend:
     build:
-      context: ./vehicle-backend-bloom
+      context: ./vehicle-backend-bloom_v2
       dockerfile: Dockerfile
     # volumes:
     #   - ./vehicle-backend-bloom/app:/code/app
