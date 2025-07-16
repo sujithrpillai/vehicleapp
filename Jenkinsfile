@@ -144,7 +144,8 @@ pipeline {
                 script {
                     // Update the image tag in frontend-deployment.yaml
                     sh '''
-                        sed -i.bak 's|(image: .*/vehicle-frontend:).*|\1'"${IMAGE_TAG}"'|' ./eks/frontend-blue-deployment.yaml
+                        yq -i '(.spec.template.spec.containers[] | select(.image | test("vehicle-frontend:"))).image = env(FRONTEND_IMAGE) + ":" + env(IMAGE_TAG)' ./eks/frontend-blue-deployment.yaml
+                        cat ./eks/frontend-blue-deployment.yaml
                     '''
                 }
             }
