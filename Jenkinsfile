@@ -65,6 +65,7 @@ pipeline {
                                 script: "kubectl get service frontend-prod -o jsonpath='{.spec.selector.version}'",
                                 returnStdout: true
                             ).trim()
+                            echo "currentVersion set by kubectl: ${currentVersion}"
                         } catch (Exception e) {
                             currentVersion = ''
                         }
@@ -75,8 +76,9 @@ pipeline {
                         } else {
                             env.VERSION = 'blue'
                         }
+                        // Use Groovy interpolation for shell commands to ensure correct VERSION
                         echo "Deploying VERSION: ${env.VERSION}"
-                        sh "echo VERSION in shell: $VERSION"
+                        sh "echo VERSION in shell: ${env.VERSION}"
 
                         def svcOutput = sh(
                             script: "kubectl get service frontend-prod -o jsonpath='{.spec.selector.version}'",
@@ -179,15 +181,15 @@ pipeline {
         stage('Update Frontend Deployment YAML') {
             steps {
                 script {
-                    // Update only the required fields in frontend-deployment.yaml
-                    sh '''
-                        yq -i '.spec.template.spec.containers[] |= (select(.name == "frontend") | .image = env(FRONTEND_IMAGE) + ":" + env(IMAGE_TAG))' ./eks/frontend-deployment.yaml
-                        yq -i '.metadata.name = "frontend-" + env(VERSION)' ./eks/frontend-deployment.yaml
-                        yq -i '.metadata.labels.version = env(VERSION)' ./eks/frontend-deployment.yaml
-                        yq -i '.spec.selector.matchLabels.version = env(VERSION)' ./eks/frontend-deployment.yaml
-                        yq -i '.spec.template.metadata.labels.version = env(VERSION)' ./eks/frontend-deployment.yaml
+                    // Use Groovy interpolation for VERSION in shell commands
+                    sh """
+                        yq -i '.spec.template.spec.containers[] |= (select(.name == \"frontend\") | .image = \"${env.FRONTEND_IMAGE}:${env.IMAGE_TAG}\")' ./eks/frontend-deployment.yaml
+                        yq -i '.metadata.name = \"frontend-${env.VERSION}\"' ./eks/frontend-deployment.yaml
+                        yq -i '.metadata.labels.version = \"${env.VERSION}\"' ./eks/frontend-deployment.yaml
+                        yq -i '.spec.selector.matchLabels.version = \"${env.VERSION}\"' ./eks/frontend-deployment.yaml
+                        yq -i '.spec.template.metadata.labels.version = \"${env.VERSION}\"' ./eks/frontend-deployment.yaml
                         cat ./eks/frontend-deployment.yaml
-                    '''
+                    """
                 }
             }
         }
