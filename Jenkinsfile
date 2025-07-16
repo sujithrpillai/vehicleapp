@@ -68,12 +68,11 @@ pipeline {
                         } catch (Exception e) {
                             currentVersion = ''
                         }
-                        if (currentVersion == 'green') {
+                        if (currentVersion == 'blue') {
+                            env.VERSION = 'green'
+                        } else if (currentVersion == 'green') {
                             env.VERSION = 'blue'
                         } else {
-                            env.VERSION = 'green'
-                        }
-                        if (!currentVersion) {
                             env.VERSION = 'blue'
                         }
                         echo "Deploying VERSION: ${env.VERSION}"
