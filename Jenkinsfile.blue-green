@@ -32,7 +32,7 @@ pipeline {
                     sh """
                         kubectl patch service frontend-prod -p '{"spec":{"selector":{"app":"frontend","version":"${VERSION}"}}}'
                         kubectl delete svc frontend-test || true
-                        if [ VERSION == "blue" ]; then
+                        if [ "$VERSION" = "blue" ]; then
                             kubectl delete deployment frontend-green || true
                         else
                             kubectl delete deployment frontend-blue || true
