@@ -5,7 +5,6 @@ pipeline {
         AWS_REGION = 'us-east-1'
         IMAGE_TAG = "${BUILD_NUMBER}"
         CLUSTER_NAME = 'vehicle'
-        VERSION = 'blue' // Set the default version to 'blue' for blue-green deployment
     }
 
     stages {
