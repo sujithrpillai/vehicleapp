@@ -187,6 +187,7 @@ pipeline {
                         yq -i '.spec.template.metadata.labels.version = \"${env.VERSION}\"' ./eks/frontend-deployment.yaml
                         cat ./eks/frontend-deployment.yaml
                         yq -i '(.metadata.labels.version, .spec.selector.version) |= "${env.VERSION}"' ./eks/frontend-test-service.yaml
+                        yq -i '(.metadata.labels.version, .spec.selector.version) |= "${env.OLD_VERSION}"' ./eks/frontend-prod-service.yaml
                         cat ./eks/frontend-test-service.yaml
                     """
                 }
@@ -202,10 +203,10 @@ pipeline {
                         kubectl apply -f ./eks/frontend-deployment.yaml
                         kubectl apply -f ./eks/frontend-prod-service.yaml
                         kubectl apply -f ./eks/frontend-test-service.yaml
-                        echo "Switching frontend service to previous version ${OLD_VERSION}"
-                        patch_json=$(jq -n --arg v "$OLD_VERSION" '{spec: {selector: {app: "frontend", version: $v}}}')
-                        echo "Patch JSON: $patch_json"
-                        kubectl patch service frontend-prod -p "$patch_json"
+                        # echo "Switching frontend service to previous version ${OLD_VERSION}"
+                        # patch_json=$(jq -n --arg v "$OLD_VERSION" '{spec: {selector: {app: "frontend", version: $v}}}')
+                        # echo "Patch JSON: $patch_json"
+                        # kubectl patch service frontend-prod -p "$patch_json"
                     '''
                 }
             }
