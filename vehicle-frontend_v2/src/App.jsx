@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import axios from 'axios'; // Component for making HTTP requests
-import { Button, TextField, Alert, Stack} from '@mui/material';
+import { Button, TextField, Alert, Stack, Chip} from '@mui/material';
 import '@mui/material/styles'; // Importing Material-UI styles
 import './App.css'; // Custom styles for the application
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import NoCrashIcon from '@mui/icons-material/NoCrash';
 
+const AppVersion= 'v1.0.0'; // Version of the application
 
 const APIHost = axios.create({
     baseURL: "/api",
@@ -39,7 +40,8 @@ function App() {
           <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <NoCrashIcon sx={{ fontSize: 80 , color: '#1976d2'}} />
           </div>
-        <h1> Vehicle Checker v1</h1>
+        <h1> Vehicle Checker</h1>
+        <Chip label={AppVersion} variant="outlined" />
         <p>
           Enter a vehicle number to check if it has any RTO notices,<br />
           such as being reported stolen, expired registration, or outstanding dues.
