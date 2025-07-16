@@ -70,10 +70,13 @@ pipeline {
                         }
                         if (currentVersion == 'blue') {
                             env.VERSION = 'green'
+                            env.OLD_VERSION = 'blue'
                         } else if (currentVersion == 'green') {
                             env.VERSION = 'blue'
+                            env.OLD_VERSION = 'green'
                         } else {
                             env.VERSION = 'blue'
+                            env.OLD_VERSION = 'blue'
                         }
                         // Use Groovy interpolation for shell commands to ensure correct VERSION
                         echo "Deploying New Version: ${env.VERSION}"
@@ -197,6 +200,7 @@ pipeline {
                         kubectl apply -f ./eks/frontend-deployment.yaml
                         kubectl apply -f ./eks/frontend-prod-service.yaml
                         kubectl apply -f ./eks/frontend-test-service.yaml
+                        kubectl patch service frontend-prod -p '{"spec":{"selector":{"app":"frontend","version":"${OLD_VERSION}"}}}'
                     '''
                 }
             }
