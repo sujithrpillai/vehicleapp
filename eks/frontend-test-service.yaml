@@ -3,8 +3,8 @@ kind: Service
 metadata:
   labels:
     app: frontend
-    version: green
-  name: frontend-green
+    version: dynamic_version
+  name: frontend-test
 spec:
   ports:
   - port: 80
@@ -12,7 +12,7 @@ spec:
     targetPort: 80
   selector:
     app: frontend
-    version: green
+    version: dynamic_version
   type: LoadBalancer
 status:
   loadBalancer: {}

@@ -188,6 +188,8 @@ pipeline {
                         yq -i '.spec.selector.matchLabels.version = \"${env.VERSION}\"' ./eks/frontend-deployment.yaml
                         yq -i '.spec.template.metadata.labels.version = \"${env.VERSION}\"' ./eks/frontend-deployment.yaml
                         cat ./eks/frontend-deployment.yaml
+                        yq -i '(.metadata.labels.version, .spec.selector.version) |= "${env.VERSION}"' ./eks/frontend-test-service.yaml
+                        cat ./eks/frontend-test-service.yaml
                     """
                 }
             }
@@ -201,6 +203,7 @@ pipeline {
                         kubectl config set-context --current --namespace=$NAMESPACE
                         kubectl apply -f ./eks/frontend-deployment.yaml
                         kubectl apply -f ./eks/frontend-prod-service.yaml
+                        kubectl apply -f ./eks/frontend-test-service.yaml
                     '''
                 }
             }
