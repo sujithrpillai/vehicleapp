@@ -7,7 +7,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import NoCrashIcon from '@mui/icons-material/NoCrash';
 
-const AppVersion= 'v1.0.7'; // Version of the application
+const AppVersion= 'v1.0.8'; // Version of the application
 
 const APIHost = axios.create({
     baseURL: "/api",
