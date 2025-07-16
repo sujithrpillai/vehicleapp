@@ -79,7 +79,7 @@ pipeline {
                         echo "Deploying VERSION: ${env.VERSION}"
 
                         def svcOutput = sh(
-                            script: "kubectl get service frontend-prod",
+                            script: "kubectl get service frontend-prod -o jsonpath='{.spec.selector.version}'",
                             returnStdout: true
                         )
                         echo "kubectl get service frontend-prod output:\n${svcOutput}"
