@@ -64,7 +64,7 @@ pipeline {
                                 script: "kubectl get service frontend-prod -o jsonpath='{.spec.selector.version}'",
                                 returnStdout: true
                             ).trim()
-                            echo "currentVersion set by kubectl: ${currentVersion}"
+                            echo "Current Production Version: ${currentVersion}"
                         } catch (Exception e) {
                             currentVersion = ''
                         }
@@ -76,14 +76,7 @@ pipeline {
                             env.VERSION = 'blue'
                         }
                         // Use Groovy interpolation for shell commands to ensure correct VERSION
-                        echo "Deploying VERSION: ${env.VERSION}"
-                        sh "echo VERSION in shell: ${env.VERSION}"
-
-                        def svcOutput = sh(
-                            script: "kubectl get service frontend-prod -o jsonpath='{.spec.selector.version}'",
-                            returnStdout: true
-                        )
-                        echo "kubectl get service frontend-prod output:\n${svcOutput}"
+                        echo "Deploying New Version: ${env.VERSION}"
                     }
                 }
             }
