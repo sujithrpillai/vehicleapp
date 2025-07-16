@@ -203,7 +203,7 @@ pipeline {
                         kubectl apply -f ./eks/frontend-prod-service.yaml
                         kubectl apply -f ./eks/frontend-test-service.yaml
                         echo "Switching frontend service to previous version ${OLD_VERSION}"
-                        kubectl patch service frontend-prod -p "{\"spec\":{\"selector\":{\"app\":\"frontend\",\"version\":\"$OLD_VERSION\"}}}"
+                        kubectl patch service frontend-prod -p '{"spec":{"selector":{"app":"frontend","version":"$OLD_VERSION"}}}'
                     '''
                 }
             }
