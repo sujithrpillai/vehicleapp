@@ -31,6 +31,12 @@ pipeline {
                 withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
                     sh """
                         kubectl patch service frontend-prod -p '{"spec":{"selector":{"app":"frontend","version":"${VERSION}"}}}'
+                        kubectl delete svc frontend-test || true
+                        if [ VERSION == "blue" ]; then
+                            kubectl delete deployment frontend-green || true
+                        else
+                            kubectl delete deployment frontend-blue || true
+                        fi
                     """
                 }
             }
