@@ -1,18 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: frontend-dynamic_version
   labels:
     app: frontend
-  name: frontend
+    version: dynamic_version
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: frontend
+      version: dynamic_version
   template:
     metadata:
       labels:
         app: frontend
+        version: dynamic_version
     spec:
       containers:
         - name: frontend

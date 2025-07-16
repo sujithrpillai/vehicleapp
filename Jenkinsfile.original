@@ -5,7 +5,6 @@ pipeline {
         AWS_REGION = 'us-east-1'
         IMAGE_TAG = "${BUILD_NUMBER}"
         CLUSTER_NAME = 'vehicle'
-        VERSION = 'blue' // Set the default version to 'blue' for blue-green deployment
     }
 
     stages {
@@ -47,35 +46,6 @@ pipeline {
                             }
                             env.NAMESPACE = "vehicle-app-${branch.replaceAll('[^a-zA-Z0-9-]', '-').toLowerCase()}"
                         }
-                    }
-                }
-            }
-        }
-        stage('Set Version for Blue-Green') {
-            steps {
-                withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
-                    sh '''
-                        aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
-                    '''
-                    script {
-                        def currentVersion = ''
-                        try {
-                            currentVersion = sh(
-                                script: "kubectl get service frontend-prod -o jsonpath='{.spec.selector.version}'",
-                                returnStdout: true
-                            ).trim()
-                        } catch (Exception e) {
-                            currentVersion = ''
-                        }
-                        if (currentVersion == 'green') {
-                            env.VERSION = 'blue'
-                        } else {
-                            env.VERSION = 'green'
-                        }
-                        if (!currentVersion) {
-                            env.VERSION = 'blue'
-                        }
-                        echo "Deploying VERSION: ${env.VERSION}"
                     }
                 }
             }
@@ -174,10 +144,8 @@ pipeline {
                 script {
                     // Update the image tag in frontend-deployment.yaml
                     sh '''
-                        yq -i '(.spec.template.spec.containers[] | select(.image | test("vehicle-frontend:")).image = env(FRONTEND_IMAGE) + ":" + env(IMAGE_TAG))' ./eks/frontend-deployment.yaml
-                        yq -i '.metadata.name = "frontend-" + env(VERSION)' ./eks/frontend-deployment.yaml
-                        yq -i '.metadata.labels.version = env(VERSION)' ./eks/frontend-deployment.yaml
-                        cat ./eks/frontend-deployment.yaml
+                        yq -i '(.spec.template.spec.containers[] | select(.image | test("vehicle-frontend:"))).image = env(FRONTEND_IMAGE) + ":" + env(IMAGE_TAG)' ./eks/frontend-blue-deployment.yaml
+                        cat ./eks/frontend-blue-deployment.yaml
                     '''
                 }
             }
@@ -189,7 +157,7 @@ pipeline {
                         aws eks update-kubeconfig --region $AWS_REGION --name $CLUSTER_NAME
                         kubectl get namespace $NAMESPACE || kubectl create namespace $NAMESPACE
                         kubectl config set-context --current --namespace=$NAMESPACE
-                        kubectl apply -f ./eks/frontend-deployment.yaml
+                        kubectl apply -f ./eks/frontend-blue-deployment.yaml
                         kubectl apply -f ./eks/frontend-prod-service.yaml
                     '''
                 }
