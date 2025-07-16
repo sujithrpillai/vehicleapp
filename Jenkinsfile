@@ -172,11 +172,13 @@ pipeline {
         stage('Update Frontend Deployment YAML') {
             steps {
                 script {
-                    // Update the image tag in frontend-deployment.yaml
+                    // Update only the required fields in frontend-deployment.yaml
                     sh '''
-                        yq -i '(.spec.template.spec.containers[] | select(.image | test("vehicle-frontend:")).image = env(FRONTEND_IMAGE) + ":" + env(IMAGE_TAG))' ./eks/frontend-deployment.yaml
+                        yq -i '.spec.template.spec.containers[] |= (select(.name == "frontend") | .image = env(FRONTEND_IMAGE) + ":" + env(IMAGE_TAG))' ./eks/frontend-deployment.yaml
                         yq -i '.metadata.name = "frontend-" + env(VERSION)' ./eks/frontend-deployment.yaml
                         yq -i '.metadata.labels.version = env(VERSION)' ./eks/frontend-deployment.yaml
+                        yq -i '.spec.selector.matchLabels.version = env(VERSION)' ./eks/frontend-deployment.yaml
+                        yq -i '.spec.template.metadata.labels.version = env(VERSION)' ./eks/frontend-deployment.yaml
                         cat ./eks/frontend-deployment.yaml
                     '''
                 }
