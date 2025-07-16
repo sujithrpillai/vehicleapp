@@ -64,7 +64,7 @@ pipeline {
                                 script: "kubectl get service frontend-prod -o jsonpath='{.spec.selector.version}'",
                                 returnStdout: true
                             ).trim()
-                            echo "Current Production Version: ${currentVersion}"
+
                         } catch (Exception e) {
                             currentVersion = ''
                         }
@@ -79,7 +79,9 @@ pipeline {
                             env.OLD_VERSION = 'blue'
                         }
                         // Use Groovy interpolation for shell commands to ensure correct VERSION
+                        echo "Old Version: ${env.OLD_VERSION}"
                         echo "Deploying New Version: ${env.VERSION}"
+
                     }
                 }
             }
