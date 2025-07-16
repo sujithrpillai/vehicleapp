@@ -75,7 +75,7 @@ pipeline {
                         } else {
                             env.VERSION = 'blue'
                         }
-                        echo "Deploying VERSION: ${env.VERSION}"
+                        echo "Deploying VERSION: ${VERSION}"
 
                         def svcOutput = sh(
                             script: "kubectl get service frontend-prod -o jsonpath='{.spec.selector.version}'",
